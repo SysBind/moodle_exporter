@@ -7,10 +7,11 @@ import (
 )
 
 type Collector struct {
-	client    *client.Moodle
-	log       *logrus.Logger
-	up        *prometheus.Desc
-	liveUsers *prometheus.Desc
+	client                           *client.Moodle
+	log                              *logrus.Logger
+	up                               *prometheus.Desc
+	liveUsers                        *prometheus.Desc
+	expectedUpcomingExamParticipants *prometheus.Desc
 }
 
 func New(client *client.Moodle, log *logrus.Logger) *Collector {
@@ -18,14 +19,16 @@ func New(client *client.Moodle, log *logrus.Logger) *Collector {
 		client: client,
 		log:    log,
 
-		up:        prometheus.NewDesc("moodle_up", "Whether the Moodle scrape was successful", nil, nil),
-		liveUsers: prometheus.NewDesc("moodle_live_users", "Active users in last 5 minutes", nil, nil),
+		up:                               prometheus.NewDesc("moodle_up", "Whether the Moodle scrape was successful", nil, nil),
+		liveUsers:                        prometheus.NewDesc("moodle_live_users", "Active users in last 5 minutes", nil, nil),
+		expectedUpcomingExamParticipants: prometheus.NewDesc("moodle_expected_upcoming_partipicants", "users which have activity scheduled (or not yet finished) in next 10 minutes", nil, nil),
 	}
 }
 
 func (c *Collector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.up
 	ch <- c.liveUsers
+	ch <- c.expectedUpcomingExamParticipants
 }
 
 func (c *Collector) Collect(ch chan<- prometheus.Metric) {
@@ -38,6 +41,7 @@ func (c *Collector) Collect(ch chan<- prometheus.Metric) {
 	} else {
 		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 1)
 		ch <- prometheus.MustNewConstMetric(c.liveUsers, prometheus.GaugeValue, float64(stats.LiveUsers))
+		ch <- prometheus.MustNewConstMetric(c.expectedUpcomingExamParticipants, prometheus.GaugeValue, float64(stats.ExpectedUpcomingExamParticipants))
 		c.log.Info("Scrape completed")
 	}
 
