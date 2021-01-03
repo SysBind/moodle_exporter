@@ -50,7 +50,7 @@ func (m *Moodle) GetUserStats() (stats *UserStats, err error) {
 		return
 	}
 	more10minutes := strconv.Itoa(int(time.Now().Unix() + 600))
-	err = m.Connection.QueryRow("SELECT COUNT (u.id) FROM mdl_quiz q JOIN mdl_course c ON c.id = q.course JOIN mdl_enrol e ON e.courseid = c.id JOIN mdl_user_enrolments ue ON ue.enrolid = e.id JOIN mdl_user u ON u.id = ue.userid WHERE q.timeopen <" + more10minutes + " AND q.timeclose >" + more10minutes).Scan(&stats.ExpectedUpcomingExamParticipants)
+	err = m.Connection.QueryRow("SELECT COUNT (u.id) FROM mdl_quiz q JOIN mdl_course c ON c.id = q.course JOIN mdl_enrol e ON e.courseid = c.id JOIN mdl_user_enrolments ue ON ue.enrolid = e.id JOIN mdl_user u ON u.id = ue.userid WHERE (q.timeclose - q.timeopen) < 60*60*10 AND q.timeopen <" + more10minutes + " AND q.timeclose >" + more10minutes).Scan(&stats.ExpectedUpcomingExamParticipants)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		return
