@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -15,7 +16,10 @@ var (
 )
 
 func main() {
-	moodle, err := client.New("localhost", "postgres", "moodlemui")
+	moodle, err := client.New(os.Getenv("PGHOST"),
+		os.Getenv("PGUSER"),
+		os.Getenv("PGPASSWORD"),
+		os.Getenv("PGDATABASE"))
 
 	if err != nil {
 		log.Fatal("Database Error, Exiting")

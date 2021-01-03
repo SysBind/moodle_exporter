@@ -19,10 +19,10 @@ type UserStats struct {
 	ExpectedUpcomingExamParticipants int
 }
 
-func New(hostname string, username string, database string) (moodle *Moodle, err error) {
+func New(hostname string, username string, password string, database string) (moodle *Moodle, err error) {
 	moodle = nil
 	conn, err := pgx.Connect(
-		pgx.ConnConfig{Host: hostname, User: username, Database: database})
+		pgx.ConnConfig{Host: hostname, User: username, Password: password, Database: database})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return
