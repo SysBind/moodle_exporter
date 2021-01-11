@@ -28,7 +28,7 @@ func NewStorageCollector(client *client.Moodle, log *logrus.Logger) *StorageColl
 		bytesBackupAuto: prometheus.NewDesc("moodle_bytes_backup_auto",
 			"bytes used by automatic backups", []string{"course"}, nil),
 		bytesAll: prometheus.NewDesc("moodle_bytes_all",
-			"bytes used by all files", []string{"course"}, nil),
+			"bytes used by all files", nil, nil),
 	}
 }
 
@@ -49,5 +49,21 @@ func (c *StorageCollector) Collect(ch chan<- prometheus.Metric) {
 			prometheus.GaugeValue,
 			float64(bytes), fmt.Sprintf("%d", course))
 	}
-	c.log.Info("Scrape completed: Stats")
+
+	for course, bytes := range stats.BytesBackup {
+		ch <- prometheus.MustNewConstMetric(c.bytesBackup,
+			prometheus.GaugeValue,
+			float64(bytes), fmt.Sprintf("%d", course))
+	}
+
+	for course, bytes := range stats.BytesBackupAuto {
+		ch <- prometheus.MustNewConstMetric(c.bytesBackupAuto,
+			prometheus.GaugeValue,
+			float64(bytes), fmt.Sprintf("%d", course))
+	}
+
+	ch <- prometheus.MustNewConstMetric(c.bytesAll,
+		prometheus.GaugeValue, float64(stats.BytesAll))
+
+	c.log.Info("Scrape completed: Storage")
 }
