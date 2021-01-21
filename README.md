@@ -9,9 +9,18 @@ Exports Moodle Application Metrics:
 - moodle_bytes_backup_auto (Labels: course ID)
 - moodle_bytes_total
 
-Currently configured (by standard PostgreSQL environment variables:)[https://www.postgresql.org/docs/current/libpq-envars.html]
+Exposes metrics on port 2345 by default.
+
+Currently configured by standard [PostgreSQL environment variables:](https://www.postgresql.org/docs/current/libpq-envars.html)
 - PGHOST
 - PGUSER
 - PGPASSWORD
 - PGDATABASE
 
+
+
+## Development
+
+```go build```
+```export PGHOST=.. PGUSER=.. PGPASSWORD=.. PGDATABASE=..```
+```./moodle_exporter```

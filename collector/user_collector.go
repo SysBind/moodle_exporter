@@ -18,7 +18,7 @@ func NewUserCollector(client *client.Moodle, log *logrus.Logger) *UserCollector 
 		Collector:                        Collector{client: client, log: log},
 		up:                               prometheus.NewDesc("moodle_up", "Whether the Moodle scrape was successful", nil, nil),
 		liveUsers:                        prometheus.NewDesc("moodle_live_users", "Active users in last 5 minutes", nil, nil),
-		expectedUpcomingExamParticipants: prometheus.NewDesc("moodle_expected_upcoming_partipicants", "users which have activity scheduled (or not yet finished) in next 10 minutes", nil, nil),
+		expectedUpcomingExamParticipants: prometheus.NewDesc("moodle_expected_upcoming_partipicants", "users which have activity scheduled (or not yet finished) in next 20 minutes and are not currently active", nil, nil),
 	}
 }
 

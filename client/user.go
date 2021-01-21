@@ -59,10 +59,11 @@ func getExpectedUpcomingExamParticipants(ctx context.Context,
 	go func() {
 		defer wg.Done()
 
-		more10minutes := strconv.Itoa(int(time.Now().Unix() + 600))
+		before5minutes := strconv.Itoa(int(time.Now().Unix() - 300))
+		more20minutes := strconv.Itoa(int(time.Now().Unix() + 1200))
 		var count int
 
-		err := conn.QueryRow(ctx, "SELECT COUNT (u.id) FROM mdl_quiz q JOIN mdl_course c ON c.id = q.course JOIN mdl_enrol e ON e.courseid = c.id JOIN mdl_user_enrolments ue ON ue.enrolid = e.id JOIN mdl_user u ON u.id = ue.userid WHERE (q.timeclose - q.timeopen) < 60*60*10 AND q.timeopen <"+more10minutes+" AND q.timeclose >"+more10minutes).Scan(&count)
+		err := conn.QueryRow(ctx, "SELECT COUNT (u.id) FROM mdl_quiz q JOIN mdl_course c ON c.id = q.course JOIN mdl_enrol e ON e.courseid = c.id JOIN mdl_user_enrolments ue ON ue.enrolid = e.id JOIN mdl_user u ON u.id = ue.userid WHERE u.lastaccess <"+before5minutes+" AND (q.timeclose - q.timeopen) < 60*60*5 AND q.timeopen <"+more20minutes+" AND q.timeclose >"+more20minutes).Scan(&count)
 
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "GetExpectedUpcomingExamParticipants failed: %v\n", err)
