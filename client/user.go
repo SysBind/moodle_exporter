@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type UserStats struct {
@@ -20,7 +20,7 @@ func (m *Moodle) GetUserStats() (stats *UserStats, err error) {
 	stats = &UserStats{LiveUsers: 0, ExpectedUpcomingExamParticipants: 0}
 
 	ctx := context.Background()
-	conn, err := pgxpool.ConnectConfig(ctx, m.poolconfig)
+	conn, err := pgxpool.NewWithConfig(ctx, m.poolconfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return

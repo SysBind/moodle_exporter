@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Moodle struct represents single moodle instance

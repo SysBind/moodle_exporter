@@ -6,7 +6,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type StorageStats struct {
@@ -25,7 +25,7 @@ func (m *Moodle) GetStorageStats() (stats *StorageStats, err error) {
 	}
 
 	ctx := context.Background()
-	conn, err := pgxpool.ConnectConfig(ctx, m.poolconfig)
+	conn, err := pgxpool.NewWithConfig(ctx, m.poolconfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return
