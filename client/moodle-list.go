@@ -22,5 +22,22 @@ func NewMoodleList(hostname string, username string, password string) (moodles M
 		return
 	}
 	defer conn.Close()
+
+	var rows *pgx.Rows
+	if rows, err = conn.Query("SELECT datname FROM pg_database"); err != nil {
+		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var datname string
+		if err = rows.Scan(&datname); err != nil {
+			fmt.Fprintf(os.Stderr, " failed: %v\n", err)
+			return
+		}
+		fmt.Printf("Checking database %s for moodle tables", datname)
+	}
+
 	return
 }
