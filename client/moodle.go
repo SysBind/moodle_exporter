@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
+// Moodle struct represents single moodle instance
 type Moodle struct {
 	PoolConfig *pgxpool.Config
 	Shortname  string
