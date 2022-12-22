@@ -36,14 +36,17 @@ func NewMoodleList(hostname string, username string, password string) (list Mood
 			fmt.Fprintf(os.Stderr, " failed: %v\n", err)
 			return
 		}
-		fmt.Printf("Checking database %s for moodle tables", datname)
+		if datname == "postgres" || datname == "template0" || datname == "template1" {
+			continue
+		}
 
 		var moodle *Moodle
 		if moodle, err = NewMoodle(hostname, username, password, datname); err != nil {
-			fmt.Printf("Skipping database %s, contains no moodle tables", datname)
+			fmt.Printf("Skipping database %s, contains no moodle tables\n", datname)
+			err = nil
+			continue
 		}
-		err = nil
-		fmt.Printf("Adding moodle %s", moodle)
+		fmt.Printf("Adding moodle %s\n", moodle)
 		list.moodles = append(list.moodles, *moodle)
 	}
 

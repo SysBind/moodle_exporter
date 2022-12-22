@@ -31,7 +31,7 @@ func NewMoodle(hostname string, username string, password string, database strin
 	var shortname string
 	err = conn.QueryRow("SELECT shortname FROM mdl_course WHERE id=1").Scan(&shortname)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		fmt.Printf("QueryRow failed: %v\n", err)
 		return
 	}
 
