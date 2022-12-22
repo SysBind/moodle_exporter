@@ -18,7 +18,7 @@ func (m Moodle) String() string {
 	return fmt.Sprintf("Moodle Instance: %s", m.shortname)
 }
 
-func New(hostname string, username string, password string, database string) (moodle *Moodle, err error) {
+func NewMoodle(hostname string, username string, password string, database string) (moodle *Moodle, err error) {
 	moodle = nil
 	connconf := pgx.ConnConfig{Host: hostname, User: username, Password: password, Database: database}
 	conn, err := pgx.Connect(connconf)

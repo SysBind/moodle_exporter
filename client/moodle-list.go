@@ -5,16 +5,14 @@ import (
 	"os"
 
 	"github.com/jackc/pgx"
-	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // List of Moodle instances
 type MoodleList struct {
-	poolConfig *pgxpool.Config
-	moodles    []Moodle
+	moodles []Moodle
 }
 
-func NewMoodleList(hostname string, username string, password string) (moodles MoodleList, err error) {
+func NewMoodleList(hostname string, username string, password string) (list MoodleList, err error) {
 	connconf := pgx.ConnConfig{Host: hostname, User: username, Password: password}
 	conn, err := pgx.Connect(connconf)
 	if err != nil {
@@ -22,6 +20,8 @@ func NewMoodleList(hostname string, username string, password string) (moodles M
 		return
 	}
 	defer conn.Close()
+
+	list = MoodleList{moodles: []Moodle{}}
 
 	var rows *pgx.Rows
 	if rows, err = conn.Query("SELECT datname FROM pg_database"); err != nil {
@@ -37,6 +37,14 @@ func NewMoodleList(hostname string, username string, password string) (moodles M
 			return
 		}
 		fmt.Printf("Checking database %s for moodle tables", datname)
+
+		var moodle *Moodle
+		if moodle, err = NewMoodle(hostname, username, password, datname); err != nil {
+			fmt.Printf("Skipping database %s, contains no moodle tables", datname)
+		}
+		err = nil
+		fmt.Printf("Adding moodle %s", moodle)
+		list.moodles = append(list.moodles, *moodle)
 	}
 
 	return
