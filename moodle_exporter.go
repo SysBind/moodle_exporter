@@ -26,7 +26,7 @@ func main() {
 	}
 	prometheus.MustRegister(collector.NewUserCollector(moodle, log))
 	prometheus.MustRegister(collector.NewStorageCollector(moodle, log))
-	log.Info("Starting moodle_exporter for ", moodle.Shortname)
+	log.Info("Starting moodle_exporter for ", moodle)
 
 	http.Handle("/metrics", promhttp.Handler())
 

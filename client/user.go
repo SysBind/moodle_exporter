@@ -20,7 +20,7 @@ func (m *Moodle) GetUserStats() (stats *UserStats, err error) {
 	stats = &UserStats{LiveUsers: 0, ExpectedUpcomingExamParticipants: 0}
 
 	ctx := context.Background()
-	conn, err := pgxpool.ConnectConfig(ctx, m.PoolConfig)
+	conn, err := pgxpool.ConnectConfig(ctx, m.poolconfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return

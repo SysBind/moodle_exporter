@@ -25,7 +25,7 @@ func (m *Moodle) GetStorageStats() (stats *StorageStats, err error) {
 	}
 
 	ctx := context.Background()
-	conn, err := pgxpool.ConnectConfig(ctx, m.PoolConfig)
+	conn, err := pgxpool.ConnectConfig(ctx, m.poolconfig)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return

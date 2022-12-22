@@ -10,8 +10,12 @@ import (
 
 // Moodle struct represents single moodle instance
 type Moodle struct {
-	PoolConfig *pgxpool.Config
-	Shortname  string
+	poolconfig *pgxpool.Config
+	shortname  string
+}
+
+func (m Moodle) String() string {
+	return fmt.Sprintf("Moodle Instance: %s", m.shortname)
 }
 
 func New(hostname string, username string, password string, database string) (moodle *Moodle, err error) {
@@ -38,7 +42,7 @@ func New(hostname string, username string, password string, database string) (mo
 		fmt.Fprintf(os.Stderr, "Failed configuring connection pool: %v\n", err)
 		return
 	}
-	moodle = &Moodle{PoolConfig: poolconf, Shortname: shortname}
+	moodle = &Moodle{poolconfig: poolconf, shortname: shortname}
 
 	return
 }
