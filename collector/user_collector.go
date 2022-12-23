@@ -1,6 +1,7 @@
 package collector
 
 import (
+	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 	"github.com/sysbind/moodle_exporter/client"
@@ -13,7 +14,7 @@ type UserCollector struct {
 	expectedUpcomingExamParticipants *prometheus.Desc
 }
 
-func NewUserCollector(client []*client.Moodle, log *logrus.Logger) *UserCollector {
+func NewUserCollector(client *client.MoodleList, log *logrus.Logger) *UserCollector {
 	return &UserCollector{
 		Collector:                        Collector{client: client, log: log},
 		up:                               prometheus.NewDesc("moodle_up", "Whether the Moodle scrape was successful",  []string{"moodle"}, nil),
@@ -31,12 +32,14 @@ func (c *UserCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *UserCollector) Collect(ch chan<- prometheus.Metric) {
 	c.log.Info("Running scrape: User")
 
-	if statsList, err := c.client.GetUserStats(); err != nil {
+	var statsList []*client.UserStats
+	var err error
+	if statsList, err = c.client.GetUserStats(); err != nil {
 		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
 		c.log.WithError(err).Error("Error during User scrape")
 		return
 	}
-	for i, stats := range statsList {
+	for _, stats := range statsList {
 		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue,
 			1,
 			fmt.Sprintf("%s", stats.MoodleShortName()))

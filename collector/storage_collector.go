@@ -42,14 +42,14 @@ func (c *StorageCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *StorageCollector) Collect(ch chan<- prometheus.Metric) {
 	c.log.Info("Running scrape: Storage")
 
-	
-	if statsList, err := c.client.GetStorageStats();  err != nil {
-		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
+	var statsList []*client.StorageStats
+	var err error
+	if statsList, err = c.client.GetStorageStats();  err != nil {
 		c.log.WithError(err).Error("Error during User scrape")
 		return
 	}
 
-	for i, stats := range statsList {
+	for _, stats := range statsList {
 		for course, bytes := range stats.BytesAssignSubmission {
 			ch <- prometheus.MustNewConstMetric(c.bytesAssignSubmission,
 				prometheus.GaugeValue,

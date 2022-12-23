@@ -24,8 +24,8 @@ func main() {
 		log.Fatal("Database Error, Exiting")
 	}
 
-	prometheus.MustRegister(collector.NewUserCollector(moodles, log))
-	prometheus.MustRegister(collector.NewStorageCollector(moodles, log))
+	prometheus.MustRegister(collector.NewUserCollector(&moodles, log))
+	prometheus.MustRegister(collector.NewStorageCollector(&moodles, log))
 	log.Info("Starting moodle_exporter for ", moodles)
 
 	http.Handle("/metrics", promhttp.Handler())
