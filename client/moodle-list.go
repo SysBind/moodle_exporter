@@ -49,6 +49,7 @@ func NewMoodleList(hostname string, username string, password string) (list Mood
 		}
 
 		var moodle *Moodle
+		fmt.Printf("Moodle list: checking datname %s\n", datname)
 		if moodle, err = NewMoodle(hostname, username, password, datname); err != nil {
 			fmt.Printf("Skipping database %s, contains no moodle tables\n", datname)
 			err = nil

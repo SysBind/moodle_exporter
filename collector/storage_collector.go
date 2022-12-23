@@ -75,7 +75,9 @@ func (c *StorageCollector) Collect(ch chan<- prometheus.Metric) {
 		}
 
 		ch <- prometheus.MustNewConstMetric(c.bytesAll,
-			prometheus.GaugeValue, float64(stats.BytesAll))
+			prometheus.GaugeValue,
+			float64(stats.BytesAll),
+			fmt.Sprintf("%s", stats.MoodleShortName()))
 	}
 	c.log.Info("Scrape completed: Storage")
 }
