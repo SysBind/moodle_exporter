@@ -26,5 +26,5 @@ Will scan all databases containing moodle installation
 ## Development
 
 ```go build```
-```export PGHOST=.. PGUSER=.. PGPASSWORD=.. PGDATABASE=..```
+```export PGHOST=.. PGUSER=.. PGPASSWORD=..```
 ```./moodle_exporter```
