@@ -9,7 +9,15 @@ import (
 
 // List of Moodle instances
 type MoodleList struct {
-	Moodles []*Moodle
+	moodles []*Moodle
+}
+
+func (list MoodleList) String() (str string) {
+	str = "Moodles:\n"
+	for i, moodle := range list.moodles {
+		str = fmt.Sprintf("%d: %s\n", i, moodle)
+	}
+	return
 }
 
 func NewMoodleList(hostname string, username string, password string) (list MoodleList, err error) {
@@ -21,7 +29,7 @@ func NewMoodleList(hostname string, username string, password string) (list Mood
 	}
 	defer conn.Close()
 
-	list = MoodleList{Moodles: []*Moodle{}}
+	list = MoodleList{moodles: []*Moodle{}}
 
 	var rows *pgx.Rows
 	if rows, err = conn.Query("SELECT datname FROM pg_database"); err != nil {
@@ -47,7 +55,7 @@ func NewMoodleList(hostname string, username string, password string) (list Mood
 			continue
 		}
 		fmt.Printf("Moodle list: adding %s\n", moodle)
-		list.Moodles = append(list.Moodles, moodle)
+		list.moodles = append(list.moodles, moodle)
 	}
 
 	return

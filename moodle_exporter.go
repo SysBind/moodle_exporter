@@ -16,7 +16,7 @@ var (
 )
 
 func main() {
-	list, err := client.NewMoodleList(os.Getenv("PGHOST"),
+	moodles, err := client.NewMoodleList(os.Getenv("PGHOST"),
 		os.Getenv("PGUSER"),
 		os.Getenv("PGPASSWORD"))
 
@@ -24,12 +24,9 @@ func main() {
 		log.Fatal("Database Error, Exiting")
 	}
 
-	for _, moodle := range list.Moodles {
-
-		prometheus.MustRegister(collector.NewUserCollector(moodle, log))
-		prometheus.MustRegister(collector.NewStorageCollector(moodle, log))
-		log.Info("Starting moodle_exporter for ", moodle)
-	}
+	prometheus.MustRegister(collector.NewUserCollector(moodles, log))
+	prometheus.MustRegister(collector.NewStorageCollector(moodles, log))
+	log.Info("Starting moodle_exporter for ", moodles)
 
 	http.Handle("/metrics", promhttp.Handler())
 

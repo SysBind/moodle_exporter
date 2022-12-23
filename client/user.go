@@ -12,12 +12,18 @@ import (
 )
 
 type UserStats struct {
+	moodle                           *Moodle
 	LiveUsers                        int
 	ExpectedUpcomingExamParticipants int
 }
 
+func (stats UserStats) MoodleShortName() string {
+	return stats.moodle.shortname
+}
+
+// Single Moodle Funcs
 func (m *Moodle) GetUserStats() (stats *UserStats, err error) {
-	stats = &UserStats{LiveUsers: 0, ExpectedUpcomingExamParticipants: 0}
+	stats = &UserStats{moodle: m, LiveUsers: 0, ExpectedUpcomingExamParticipants: 0}
 
 	ctx := context.Background()
 	conn, err := pgxpool.NewWithConfig(ctx, m.poolconfig)
@@ -71,4 +77,20 @@ func getExpectedUpcomingExamParticipants(ctx context.Context,
 		}
 		stats.ExpectedUpcomingExamParticipants = count
 	}()
+}
+
+
+// Moodle List Funcs
+func (list *MoodleList) GetUserStats() (statsList []*UserStats, err error) {
+	statsList = []*UserStats{}
+
+	for i, moodle := range list.moodles {
+		var stats *UserStats
+		fmt.Printf("%d: getting user stats for %s\n", i, moodle)
+		if stats, err = moodle.GetUserStats(); err != nil {
+			return
+		}
+		statsList = append(statsList, stats)
+	}
+	return
 }

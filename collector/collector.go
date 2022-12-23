@@ -6,6 +6,6 @@ import (
 )
 
 type Collector struct {
-	client *client.Moodle
+	client *client.MoodleList
 	log    *logrus.Logger
 }

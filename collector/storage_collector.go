@@ -16,19 +16,19 @@ type StorageCollector struct {
 	bytesAll              *prometheus.Desc
 }
 
-func NewStorageCollector(client *client.Moodle, log *logrus.Logger) *StorageCollector {
+func NewStorageCollector(client *client.MoodleList, log *logrus.Logger) *StorageCollector {
 	return &StorageCollector{
 		Collector: Collector{client: client, log: log},
 
 		bytesAssignSubmission: prometheus.NewDesc("moodle_bytes_assign_submission",
-			"bytes used by assign submissions", []string{"course"}, nil),
+			"bytes used by assign submissions", []string{"moodle", "course"}, nil),
 
 		bytesBackup: prometheus.NewDesc("moodle_bytes_backup",
-			"bytes used by backups excluding automatic", []string{"course"}, nil),
+			"bytes used by backups excluding automatic", []string{"moodle", "course"}, nil),
 		bytesBackupAuto: prometheus.NewDesc("moodle_bytes_backup_auto",
-			"bytes used by automatic backups", []string{"course"}, nil),
+			"bytes used by automatic backups", []string{"moodle", "course"}, nil),
 		bytesAll: prometheus.NewDesc("moodle_bytes_all",
-			"bytes used by all files", nil, nil),
+			"bytes used by all files", []string{"moodle"}, nil),
 	}
 }
 
@@ -42,28 +42,40 @@ func (c *StorageCollector) Describe(ch chan<- *prometheus.Desc) {
 func (c *StorageCollector) Collect(ch chan<- prometheus.Metric) {
 	c.log.Info("Running scrape: Storage")
 
-	stats, _ := c.client.GetStorageStats()
-
-	for course, bytes := range stats.BytesAssignSubmission {
-		ch <- prometheus.MustNewConstMetric(c.bytesAssignSubmission,
-			prometheus.GaugeValue,
-			float64(bytes), fmt.Sprintf("%d", course))
+	
+	if statsList, err := c.client.GetStorageStats();  err != nil {
+		ch <- prometheus.MustNewConstMetric(c.up, prometheus.GaugeValue, 0)
+		c.log.WithError(err).Error("Error during User scrape")
+		return
 	}
 
-	for course, bytes := range stats.BytesBackup {
-		ch <- prometheus.MustNewConstMetric(c.bytesBackup,
-			prometheus.GaugeValue,
-			float64(bytes), fmt.Sprintf("%d", course))
+	for i, stats := range statsList {
+		for course, bytes := range stats.BytesAssignSubmission {
+			ch <- prometheus.MustNewConstMetric(c.bytesAssignSubmission,
+				prometheus.GaugeValue,
+				float64(bytes),
+				fmt.Sprintf("%s", stats.MoodleShortName()),
+				fmt.Sprintf("%d", course))
+		}
+
+		for course, bytes := range stats.BytesBackup {
+			ch <- prometheus.MustNewConstMetric(c.bytesBackup,
+				prometheus.GaugeValue,
+				float64(bytes),
+				fmt.Sprintf("%s", stats.MoodleShortName()),
+				fmt.Sprintf("%d", course))
+		}
+
+		for course, bytes := range stats.BytesBackupAuto {
+			ch <- prometheus.MustNewConstMetric(c.bytesBackupAuto,
+				prometheus.GaugeValue,
+				float64(bytes),
+				fmt.Sprintf("%s", stats.MoodleShortName()),
+				fmt.Sprintf("%d", course))
+		}
+
+		ch <- prometheus.MustNewConstMetric(c.bytesAll,
+			prometheus.GaugeValue, float64(stats.BytesAll))
 	}
-
-	for course, bytes := range stats.BytesBackupAuto {
-		ch <- prometheus.MustNewConstMetric(c.bytesBackupAuto,
-			prometheus.GaugeValue,
-			float64(bytes), fmt.Sprintf("%d", course))
-	}
-
-	ch <- prometheus.MustNewConstMetric(c.bytesAll,
-		prometheus.GaugeValue, float64(stats.BytesAll))
-
 	c.log.Info("Scrape completed: Storage")
 }

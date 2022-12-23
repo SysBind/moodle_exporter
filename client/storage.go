@@ -10,14 +10,21 @@ import (
 )
 
 type StorageStats struct {
+	moodle                *Moodle
 	BytesAssignSubmission map[int]int
 	BytesBackup           map[int]int
 	BytesBackupAuto       map[int]int
 	BytesAll              int64
 }
 
+func (stats StorageStats) MoodleShortName() string {
+	return stats.moodle.shortname
+}
+
+// Single Moodle Funcs
 func (m *Moodle) GetStorageStats() (stats *StorageStats, err error) {
 	stats = &StorageStats{
+		moodle:                m,
 		BytesAssignSubmission: make(map[int]int),
 		BytesBackup:           make(map[int]int),
 		BytesBackupAuto:       make(map[int]int),
@@ -146,4 +153,19 @@ func getBytesAll(ctx context.Context, conn *pgxpool.Pool,
 			stats.BytesAll = bytes
 		}
 	}()
+}
+
+// Moodle List Funcs
+func (list *MoodleList) GetStorageStats() (statsList []*StorageStats, err error) {
+	statsList = []*StorageStats{}
+
+	for i, moodle := range list.moodles {
+		var stats *StorageStats
+		fmt.Printf("%d: getting user stats for %s\n", i, moodle)
+		if stats, err = moodle.GetStorageStats(); err != nil {
+			return
+		}
+		statsList = append(statsList, stats)
+	}
+	return	
 }
