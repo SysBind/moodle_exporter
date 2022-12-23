@@ -161,7 +161,7 @@ func (list *MoodleList) GetStorageStats() (statsList []*StorageStats, err error)
 
 	for i, moodle := range list.moodles {
 		var stats *StorageStats
-		fmt.Printf("%d: getting user stats for %s\n", i, moodle)
+		fmt.Printf("%d: getting storage stats for %s\n", i, moodle)
 		if stats, err = moodle.GetStorageStats(); err != nil {
 			return
 		}
