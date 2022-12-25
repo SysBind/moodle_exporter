@@ -1,10 +1,9 @@
 name: Docker Image CI
 
 on:
-on:
   create:
     tags:
-      - v*
+    - "v*"
 jobs:
   build:
     runs-on: ubuntu-latest
