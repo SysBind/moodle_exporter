@@ -13,9 +13,9 @@ type MoodleList struct {
 }
 
 func (list MoodleList) String() (str string) {
-	str = "Moodles:\n"
+	str = "Moodles:"
 	for i, moodle := range list.moodles {
-		str = fmt.Sprintf("%d: %s\n", i, moodle)
+		str = str + fmt.Sprintf(" -- %d: %s", i, moodle)
 	}
 	return
 }
