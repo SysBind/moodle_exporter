@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -21,6 +22,10 @@ func main() {
 		os.Getenv("PGPASSWORD"))
 
 	if err != nil {
+		if os.Getenv("DEBUG") == "1" {
+			log.Warning("Database Error, DEBUG=1, sleeping for 1 hour..")
+			time.Sleep(time.Hour)
+		}
 		log.Fatal("Database Error, Exiting")
 	}
 

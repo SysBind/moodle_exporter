@@ -26,6 +26,13 @@ Will scan all databases containing moodle installation
 Automated build available: ghcr.io/sysbind/moodle_exporter:0.9
 (see latest release under _Releases_)
 
+## Troubleshooting
+Add the DEBUG=1 enviromnet variable, 
+moodle_exporter will sleep 1 Hour on database error before exiting,
+Allowing you to exec into the container to test, examine vars, etc.
+(Or to attach ephemeral debuggin container)
+
+
 ## Development
 
 ```go build```
