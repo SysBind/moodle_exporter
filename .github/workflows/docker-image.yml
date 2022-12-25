@@ -15,10 +15,5 @@ jobs:
         uses: macbre/push-to-ghcr@master
         with:
           image_name: ${{ github.repository }}  # it will be lowercased internally
+          image_tag: ${GITHUB_REF#refs/*/}
           github_token: ${{ secrets.GITHUB_TOKEN }}  
-  # build:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v3
-  #   - name: Build the Docker image
-  #     run: docker build . --file Dockerfile --tag moodle-exporter:${GITHUB_REF#refs/*/}
