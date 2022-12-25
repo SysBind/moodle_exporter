@@ -52,7 +52,7 @@ func getLiveUsers(ctx context.Context, conn *pgxpool.Pool,
 		before5minutes := strconv.Itoa(int(time.Now().Unix() - 300))
 		var count int
 		if err := conn.QueryRow(ctx, "SELECT COUNT(id) FROM mdl_user WHERE lastaccess >"+before5minutes).Scan(&count); err != nil {
-			fmt.Fprintf(os.Stderr, "GetExpectedUpcomingExamParticipants failed: %v\n", err)
+			fmt.Fprintf(os.Stderr, "getLiveUsers failed: %v\n", err)
 			return
 		}
 		stats.LiveUsers = count
@@ -78,7 +78,6 @@ func getExpectedUpcomingExamParticipants(ctx context.Context,
 		stats.ExpectedUpcomingExamParticipants = count
 	}()
 }
-
 
 // Moodle List Funcs
 func (list *MoodleList) GetUserStats() (statsList []*UserStats, err error) {
