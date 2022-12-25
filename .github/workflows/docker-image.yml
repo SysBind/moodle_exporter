@@ -1,18 +1,14 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
+on:
+  create:
+    tags:
+      - v*
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag moodle-exporter:$(date +%s)
+      run: docker build . --file Dockerfile --tag moodle-exporter:$TAG
