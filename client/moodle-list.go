@@ -1,11 +1,13 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
 
-	"github.com/jackc/pgx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // List of Moodle instances
@@ -22,12 +24,20 @@ func (list MoodleList) String() (str string) {
 }
 
 func NewMoodleList(hostname string, username string, password string) (list MoodleList, err error) {
-	connconf := pgx.ConnConfig{Host: hostname, User: username, Password: password}
+	var poolconf *pgxpool.Config
+	connstr := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
+		username, password, hostname, "postgres")
+	poolconf, err = pgxpool.ParseConfig(connstr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed configuring connection pool: %v\n", err)
+		return
+	}
 
+	ctx := context.Background()
 	attempt := 0
-	var conn *pgx.Conn
+	var conn *pgxpool.Pool
 	for {
-		conn, err = pgx.Connect(connconf)
+		conn, err = pgxpool.NewWithConfig(ctx, poolconf)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 			if attempt < 5 {
@@ -44,8 +54,8 @@ func NewMoodleList(hostname string, username string, password string) (list Mood
 
 	list = MoodleList{moodles: []*Moodle{}}
 
-	var rows *pgx.Rows
-	if rows, err = conn.Query("SELECT datname FROM pg_database"); err != nil {
+	var rows pgx.Rows
+	if rows, err = conn.Query(ctx, "SELECT datname FROM pg_database"); err != nil {
 		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
 		return
 	}

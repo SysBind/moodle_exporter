@@ -1,10 +1,10 @@
 package client
 
 import (
+	"context"
 	"fmt"
 	"os"
 
-	"github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,8 +20,18 @@ func (m Moodle) String() string {
 
 func NewMoodle(hostname string, username string, password string, database string) (moodle *Moodle, err error) {
 	moodle = nil
-	connconf := pgx.ConnConfig{Host: hostname, User: username, Password: password, Database: database}
-	conn, err := pgx.Connect(connconf)
+	var poolconf *pgxpool.Config
+	connstr := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
+		username, password, hostname, "postgres")
+	poolconf, err = pgxpool.ParseConfig(connstr)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed configuring connection pool: %v\n", err)
+		return
+	}
+
+	ctx := context.Background()
+	var conn *pgxpool.Pool
+	conn, err = pgxpool.NewWithConfig(ctx, poolconf)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		return
@@ -29,17 +39,9 @@ func NewMoodle(hostname string, username string, password string, database strin
 	defer conn.Close()
 
 	var shortname string
-	err = conn.QueryRow("SELECT shortname FROM mdl_course WHERE id=1").Scan(&shortname)
+	err = conn.QueryRow(ctx, "SELECT shortname FROM mdl_course WHERE id=1").Scan(&shortname)
 	if err != nil {
 		fmt.Printf("QueryRow failed: %v\n", err)
-		return
-	}
-
-	connstr := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
-		username, password, hostname, database)
-	poolconf, err := pgxpool.ParseConfig(connstr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Failed configuring connection pool: %v\n", err)
 		return
 	}
 	moodle = &Moodle{poolconfig: poolconf, shortname: shortname}
