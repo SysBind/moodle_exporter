@@ -21,6 +21,8 @@ Currently configured by standard [PostgreSQL environment variables:](https://www
 
 Will scan all databases containing moodle installation
 
+_Note_: .pgpass file can be used instead of PGPASSWORD
+
 
 ## Docker Images
 Automated build available: ghcr.io/sysbind/moodle_exporter:0.9

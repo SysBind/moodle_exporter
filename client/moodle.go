@@ -22,7 +22,7 @@ func NewMoodle(hostname string, username string, password string, database strin
 	moodle = nil
 	var poolconf *pgxpool.Config
 	connstr := fmt.Sprintf("postgres://%s:%s@%s:5432/%s",
-		username, password, hostname, "postgres")
+		username, password, hostname, database)
 	poolconf, err = pgxpool.ParseConfig(connstr)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Failed configuring connection pool: %v\n", err)
