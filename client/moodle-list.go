@@ -3,6 +3,7 @@ package client
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/jackc/pgx"
 )
@@ -22,10 +23,22 @@ func (list MoodleList) String() (str string) {
 
 func NewMoodleList(hostname string, username string, password string) (list MoodleList, err error) {
 	connconf := pgx.ConnConfig{Host: hostname, User: username, Password: password}
-	conn, err := pgx.Connect(connconf)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		return
+
+	attempt := 0
+	var conn *pgx.Conn
+	for {
+		conn, err = pgx.Connect(connconf)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+			if attempt < 5 {
+				attempt++
+				fmt.Printf("Sleeping %d seconds before retry..\n", attempt*2)
+				time.Sleep(time.Duration(attempt*2) * time.Second)
+				continue
+			}
+			return
+		}
+		break
 	}
 	defer conn.Close()
 
