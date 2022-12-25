@@ -22,6 +22,9 @@ Currently configured by standard [PostgreSQL environment variables:](https://www
 Will scan all databases containing moodle installation
 
 
+## Docker Images
+Automated build available: ghcr.io/sysbind/moodle_exporter:0.9
+(see latest release under _Releases_)
 
 ## Development
 
