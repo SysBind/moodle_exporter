@@ -66,6 +66,7 @@ func getBytesAssignSubmission(ctx context.Context, conn *pgxpool.Pool,
 			fmt.Fprintf(os.Stderr, "getBytesAssignSubmission failed: %v\n", err)
 		} else {
 			defer rows.Close()
+			stats.BytesAssignSubmission[0] = 0 // default value in case results empty
 
 			for rows.Next() {
 				var course, bytes int
@@ -95,6 +96,7 @@ func getBytesBackup(ctx context.Context, conn *pgxpool.Pool,
 			fmt.Fprintf(os.Stderr, "getBytesBackup failed: %v\n", err)
 		} else {
 			defer rows.Close()
+			stats.BytesBackup[0] = 0 // default value in case results empty
 
 			for rows.Next() {
 				var course, bytes int
@@ -124,9 +126,11 @@ func getBytesBackupAuto(ctx context.Context, conn *pgxpool.Pool,
 			fmt.Fprintf(os.Stderr, "getBytesBackupAuto failed: %v\n", err)
 		} else {
 			defer rows.Close()
+			stats.BytesBackupAuto[0] = 0 // default value in case results empty
 
 			for rows.Next() {
 				var course, bytes int
+
 				err := rows.Scan(&course, &bytes)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "getBytesBackupAuto failed: %v\n", err)
@@ -167,5 +171,5 @@ func (list *MoodleList) GetStorageStats() (statsList []*StorageStats, err error)
 		}
 		statsList = append(statsList, stats)
 	}
-	return	
+	return
 }
