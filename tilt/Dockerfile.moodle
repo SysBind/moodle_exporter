@@ -1,4 +1,4 @@
 FROM moodlehq/moodle-php-apache:8.3
 RUN rmdir  /var/www/html
 RUN git clone https://github.com/moodle/moodle.git /var/www/html -b MOODLE_405_STABLE
-
+COPY moodle_config.php /var/www/html/config.php
