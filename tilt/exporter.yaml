@@ -26,15 +26,9 @@ spec:
           - name: PGHOST
             value: postgresql
           - name: PGUSER
-            valueFrom:
-              secretKeyRef:
-                name: moodle-exporter
-                key: username
+            value: postgres
           - name: PGPASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: moodle-exporter
-                key: password
+            value: q1w2e3r4
           - name: PGDATABASE
             value: moodle
             

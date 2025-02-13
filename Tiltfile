@@ -1,6 +1,6 @@
 # Deploy: tell Tilt what YAML to deploy
 k8s_yaml('tilt/exporter.yaml')
-
+k8s_yaml('tilt/postgres.yaml')
 # Build: tell Tilt what images to build from which directories
 
 docker_build('sysbind/moodle_exporter', '.')
