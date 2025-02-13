@@ -22,6 +22,8 @@ spec:
         env:
           - name: POSTGRES_PASSWORD
             value: q1w2e3r4
+          - name: POSTGRES_DB
+            value: moodle
 
 ---
 apiVersion: v1
