@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+  labels:
+    app: moodle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moodle
+  template:
+    metadata:
+      labels:
+        app: moodle
+    spec:
+      containers:
+      - name: moodle
+        image: sysbind/moodle-php-apache
+        ports:
+        - containerPort: 80
+            
