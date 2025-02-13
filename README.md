@@ -37,6 +37,11 @@ Allowing you to exec into the container to test, examine vars, etc.
 
 ## Development
 
+### Local
 ```go build```
 ```export PGHOST=.. PGUSER=.. PGPASSWORD=..```
 ```./moodle_exporter```
+
+### Local K8S
+- ```kind create cluster --name moodleexporter```
+- ```tilt up```

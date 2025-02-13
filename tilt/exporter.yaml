@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle-exporter
+  labels:
+    app: moodle-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: moodle-exporter
+  template:
+    metadata:
+      labels:
+        app: moodle-exporter
+      annotations:
+        prometheus.io/port: "2345"
+        prometheus.io/scrape_slow: "true"
+    spec:
+      containers:
+      - name: moodle-exporter
+        image: sysbind/moodle_exporter:latest
+        ports:
+        - containerPort: 2345
+        env:
+          - name: PGHOST
+            value: postgresql
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: moodle-exporter
+                key: username
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: moodle-exporter
+                key: password
+          - name: PGDATABASE
+            value: moodle
+            
