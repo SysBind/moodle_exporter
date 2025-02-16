@@ -7,8 +7,11 @@ k8s_yaml('tilt/postgres.yaml')
 k8s_yaml('tilt/moodle.yaml')
 
 helm_repo('prometheus-community', 'https://prometheus-community.github.io/helm-charts')
-helm_resource('prometheus', 'prometheus-community/prometheus')
-helm_resource('prometheus-adapter', 'prometheus-community/prometheus-adapter')
+helm_resource('prometheus', 'prometheus-community/prometheus',
+              resource_deps=['prometheus-community'])
+helm_resource('prometheus-adapter', 'prometheus-community/prometheus-adapter',
+              flags=['--values=./tilt/prometheus-adapter-chart-values.yaml'],
+              resource_deps=['prometheus-community'])
 
 
 # Build: tell Tilt what images to build from which directories
